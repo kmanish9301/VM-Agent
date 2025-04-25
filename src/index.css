@@ -1,0 +1,15 @@
+html,
+body,
+#app {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  border: none !important;
+  /* outline: none !important; */
+}
+
+/* *:focus {
+  outline: none !important;
+} */

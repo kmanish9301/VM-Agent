@@ -1,0 +1,88 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+.otp-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #f9f9f9;
+}
+
+.container {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.inputs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.separator {
+    margin: 0px 8px;
+}
+
+.button1:disabled,
+.button1[disabled] {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
+.error {
+    color: red;
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.guidelines-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.guidelines-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+.guidelines-scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 8px;
+}
+
+.guidelines-scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
