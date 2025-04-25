@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import OtpInput from 'react-otp-input';
 import "./style.css";
-import VMAgent from "./VMAgent";
 
 const OTPComponent = () => {
     const [otp, setOtp] = useState("");
@@ -21,9 +20,6 @@ const OTPComponent = () => {
         window.electron.ipcRenderer.send("verify-otp", otp); // IPC call
         setError("");
         setShowLoader(true);
-        setTimeout(() => {
-            setShowLoader(false);
-        }, 40000);
     };
 
     useEffect(() => {
@@ -45,10 +41,6 @@ const OTPComponent = () => {
         };
     }, []);
 
-    if (verified) {
-        return <VMAgent />;
-    }
-
     return (
         <div className="otp-wrapper">
             <div className="container">
@@ -57,42 +49,52 @@ const OTPComponent = () => {
                         <div className="loader"></div>
                     </div>
                 )}
-                <h2 style={{ marginBottom: "1rem" }}>Enter Code to Access Guide Labs</h2>
-                <h3>To start, please enter the code displayed on the labs page</h3>
-                <div id="inputs" className="inputs">
-                    <OtpInput
-                        value={otp}
-                        onChange={handleOtpChange}
-                        numInputs={10}
-                        renderInput={(props: any) => <input {...props} />}
-                        inputStyle={{ width: '1.5rem', height: '1.5rem', margin: '0.5rem', fontSize: '1.2rem', borderRadius: '0.4rem', border: '1px solid #ccc', textAlign: 'center', }} />
-                </div>
 
-                <button
-                    disabled={!otp || otp.length !== 10}
-                    id="btnCheckOTP"
-                    type="button"
-                    className="button button1"
-                    onClick={handleVerifyOTP}
-                    style={{
-                        padding: "0.5rem 1.5rem",
-                        borderRadius: "0.5rem",
-                        fontSize: "1rem",
-                        width: "auto",
-                        height: "auto",
-                        marginTop: "1.5rem",
-                        backgroundColor: "#000",
-                        color: "#fff",
-                        cursor: !otp || otp.length !== 10 ? "not-allowed" : "pointer",
-                        opacity: !otp || otp.length !== 10 ? 0.6 : 1,
-                        border: "none",
-                        transition: "all 0.3s ease",
-                    }}
-                >
-                    Verify
-                </button>
+                {verified ? (
+                    <div style={{ textAlign: "center" }}>
+                        <h2>Verified Successfully!</h2>
+                        <p>VM Agent has been launched.</p>
+                    </div>
+                ) : (
+                    <>
+                        <h2 style={{ marginBottom: "1rem" }}>Enter Code to Access Guide Labs</h2>
+                        <h3>To start, please enter the code displayed on the labs page</h3>
+                        <div id="inputs" className="inputs">
+                            <OtpInput
+                                value={otp}
+                                onChange={handleOtpChange}
+                                numInputs={10}
+                                renderInput={(props: any) => <input {...props} />}
+                                inputStyle={{ width: '1.5rem', height: '1.5rem', margin: '0.5rem', fontSize: '1.2rem', borderRadius: '0.4rem', border: '1px solid #ccc', textAlign: 'center', }} />
+                        </div>
 
-                <div className="error">{error}</div>
+                        <button
+                            disabled={!otp || otp.length !== 10}
+                            id="btnCheckOTP"
+                            type="button"
+                            className="button button1"
+                            onClick={handleVerifyOTP}
+                            style={{
+                                padding: "0.5rem 1.5rem",
+                                borderRadius: "0.5rem",
+                                fontSize: "1rem",
+                                width: "auto",
+                                height: "auto",
+                                marginTop: "1.5rem",
+                                backgroundColor: "#000",
+                                color: "#fff",
+                                cursor: !otp || otp.length !== 10 ? "not-allowed" : "pointer",
+                                opacity: !otp || otp.length !== 10 ? 0.6 : 1,
+                                border: "none",
+                                transition: "all 0.3s ease",
+                            }}
+                        >
+                            Verify
+                        </button>
+
+                        <div className="error">{error}</div>
+                    </>
+                )}
             </div>
         </div>
     );
