@@ -45,8 +45,8 @@ function createMainWindow(width = 650, height = 650) {
 function createAgentWindow(collapsed = true) {
   const { width: screenW, height: screenH } = screen.getPrimaryDisplay().workAreaSize;
 
-  const windowWidth = collapsed ? 100 : 600;
-  const windowHeight = collapsed ? 100 : 700;
+  const windowWidth = collapsed ? 100 : 540;
+  const windowHeight = collapsed ? 100 : 640;
 
   agentWindow = new BrowserWindow({
     width: windowWidth,
@@ -98,8 +98,8 @@ ipcMain.on("verify-otp", (event, otpValue) => {
 // Expand agent window
 ipcMain.on("expand-agent", () => {
   if (!agentWindow) return;
-  const width = 600;
-  const height = 700;
+  const width = 540;
+  const height = 650;
   const screenSize = screen.getPrimaryDisplay().workAreaSize;
 
   agentWindow.setBounds({
@@ -118,12 +118,18 @@ ipcMain.on("collapse-agent", () => {
   const height = 100;
   const screenSize = screen.getPrimaryDisplay().workAreaSize;
 
-  agentWindow.setBounds({
-    width,
-    height,
-    x: screenSize.width - width - 20,
-    y: screenSize.height - height - 20,
-  });
+  agentWindow.setOpacity(0);
+
+  setTimeout(() => {
+    agentWindow.setBounds({
+      width,
+      height,
+      x: screenSize.width - width - 20,
+      y: screenSize.height - height - 20,
+    });
+
+    agentWindow.setOpacity(1);
+  }, 200);
 });
 
 // App lifecycle

@@ -5,14 +5,18 @@ import './style.css';
 const VMAgent = () => {
     const [expanded, setExpanded] = useState(false);
 
-    const guidelines = `
-VM Guidelines:
-- Do not refresh the browser.
-- Save files regularly.
-- Use terminal for coding assessments.Use terminal for coding assessments.
-- Ensure stable internet connection.
-(repeated for demonstration...)
-`.repeat(20);
+    const guidelines = [
+        "Do not refresh the browser.",
+        "Save files regularly.",
+        "Use terminal for coding assessments.",
+        "Ensure stable internet connection.",
+        "Do not close the agent window.",
+        "All activity may be logged.",
+        "Keep an eye on time limits.",
+        "Seek help only when permitted.",
+        "Complete each task before moving on.",
+        "Avoid switching to unrelated tabs/apps.",
+    ];
 
     useEffect(() => {
         if (expanded) {
@@ -43,17 +47,21 @@ VM Guidelines:
                     style={{ overflowY: "auto", maxHeight: "calc(100% - 40px)", paddingRight: "8px" }}
                     className="guidelines-scroll"
                 >
-                    <pre
-                        style={{ fontSize: "13px", whiteSpace: "pre-wrap", margin: 0, }}>
-                        {guidelines}
-                    </pre>
+                    <ul
+                        style={{ padding: "1rem 0 1rem 1rem", margin: 0, fontSize: "1rem", lineHeight: "1.3rem", listStyleType: "disc", }}>
+                        {guidelines.map((text, index) => (
+                            <li key={index} style={{ marginBottom: "0.75rem" }}>
+                                {text}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
 
             {!expanded && (
                 <button
                     onClick={() => setExpanded(true)}
-                    style={{ position: "absolute", bottom: "20px", right: "20px", width: "60px", height: "60px", borderRadius: "50%", backgroundColor: "#000", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "none", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)", cursor: "pointer", zIndex: 3, }}
+                    style={{ position: "absolute", bottom: "20px", right: "20px", width: "60px", height: "60px", borderRadius: "50%", backgroundColor: "#2C2C2C", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "none", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)", cursor: "pointer", zIndex: 3, }}
                     aria-label="Open Guidelines"
                 >
                     <MessageSquare size={28} />
