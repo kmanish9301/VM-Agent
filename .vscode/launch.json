@@ -24,7 +24,7 @@
             "name": "Attach to Renderer Process (Vite)",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:5173",
+            "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/src/renderer", // update path if needed
             "sourceMaps": true,
             "trace": true

@@ -7,4 +7,8 @@ export default defineConfig({
         outDir: '.vite/build', // Matches your `main` entry in package.json
         emptyOutDir: true,
     },
+    server: {
+        host: "localhost",
+        port: 3000,
+    }
 });

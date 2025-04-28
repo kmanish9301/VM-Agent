@@ -3,6 +3,7 @@ import path from 'path';
 
 let mainWindow: BrowserWindow;
 let agentWindow: BrowserWindow | null = null;
+let guidelines: string[] = [];
 
 function createMainWindow(width = 650, height = 650) {
   const { width: screenW, height: screenH } = screen.getPrimaryDisplay().workAreaSize;
@@ -34,12 +35,18 @@ function createMainWindow(width = 650, height = 650) {
 
   let startURL: string;
   if (isDev) {
-    startURL = process.env['ELECTRON_RENDERER_URL'] || 'http://localhost:5173';
+    startURL = process.env['ELECTRON_RENDERER_URL'] || 'http://localhost:3000';
   } else {
     startURL = `file://${path.join(__dirname, '../renderer/main_window/index.html')}`;
   }
 
   mainWindow.loadURL(startURL).catch(console.error);
+
+  if (isDev) {
+    mainWindow.webContents.once('dom-ready', () => {
+      mainWindow.webContents.openDevTools({ mode: "detach" });
+    });
+  }
 }
 
 function createAgentWindow(collapsed = true) {
@@ -72,42 +79,64 @@ function createAgentWindow(collapsed = true) {
 
   let startURL: string;
   if (isDev) {
-    startURL = `${process.env['ELECTRON_RENDERER_URL'] || 'http://localhost:5173'}?agent=true`;
+    startURL = `${process.env['ELECTRON_RENDERER_URL'] || 'http://localhost:3000'}?agent=true`;
   } else {
     startURL = `file://${path.join(__dirname, '../renderer/main_window/index.html')}?agent=true`;
   }
 
   agentWindow.loadURL(startURL).catch(console.error);
+
+  agentWindow.webContents.on('did-finish-load', () => {
+    if (agentWindow) {
+      agentWindow.webContents.send('set-guidelines', guidelines);
+    }
+  });
+
+  // Open DevTools for agent window as well if needed
+  if (isDev) {
+    agentWindow.webContents.once('dom-ready', () => {
+      agentWindow.webContents.openDevTools({ mode: "detach" });
+    });
+  }
 }
 
 // Handle OTP verification
-ipcMain.on("verify-otp", (event, otpValue) => {
-  if (otpValue === "1234567890") {
-    // Create agent window when OTP is verified
+ipcMain.on("verify-otp", (event, data) => {
+  // If we received an object with guidelines, extract them
+  if (typeof data === 'object' && data.guidelines) {
+    // Store the guidelines
+    guidelines = data.guidelines;
+
+    // Create agent window with the received guidelines
     createAgentWindow(true);
 
     // Hide the main window
     mainWindow.hide();
 
+    // Notify the renderer that OTP was verified
     event.sender.send("otp-verified");
   } else {
-    event.sender.send("otp-error", "Invalid OTP. Please try again.");
+    // If no guidelines were received, send an error
+    event.sender.send("otp-error", "Invalid or incomplete data received. Please try again.");
   }
 });
 
 // Expand agent window
 ipcMain.on("expand-agent", () => {
   if (!agentWindow) return;
-  const width = 540;
-  const height = 650;
-  const screenSize = screen.getPrimaryDisplay().workAreaSize;
 
-  agentWindow.setBounds({
-    width,
-    height,
-    x: screenSize.width - width - 20,
-    y: screenSize.height - height - 20,
-  });
+  setTimeout(() => {
+    const width = 540;
+    const height = 650;
+    const screenSize = screen.getPrimaryDisplay().workAreaSize;
+
+    agentWindow.setBounds({
+      width,
+      height,
+      x: screenSize.width - width - 20,
+      y: screenSize.height - height - 20,
+    });
+  }, 50);
 });
 
 // Collapse agent window

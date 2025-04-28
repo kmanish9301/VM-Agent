@@ -4,19 +4,7 @@ import './style.css';
 
 const VMAgent = () => {
     const [expanded, setExpanded] = useState(false);
-
-    const guidelines = [
-        "Do not refresh the browser.",
-        "Save files regularly.",
-        "Use terminal for coding assessments.",
-        "Ensure stable internet connection.",
-        "Do not close the agent window.",
-        "All activity may be logged.",
-        "Keep an eye on time limits.",
-        "Seek help only when permitted.",
-        "Complete each task before moving on.",
-        "Avoid switching to unrelated tabs/apps.",
-    ];
+    const [guidelines, setGuidelines] = useState<{ type: string; step_no?: string; description: string }[]>([]);
 
     useEffect(() => {
         if (expanded) {
@@ -25,6 +13,21 @@ const VMAgent = () => {
             window.electron?.ipcRenderer.send("collapse-agent");
         }
     }, [expanded]);
+
+    useEffect(() => {
+        // Listen for guidelines from the main process
+        const handleSetGuidelines = (_event: any, receivedGuidelines: { type: string; step_no?: string; description: string }[]) => {
+            if (Array.isArray(receivedGuidelines) && receivedGuidelines.length > 0) {
+                setGuidelines(receivedGuidelines);
+            }
+        };
+
+        window.electron?.ipcRenderer.on("set-guidelines", handleSetGuidelines);
+
+        return () => {
+            window.electron?.ipcRenderer.removeListener("set-guidelines", handleSetGuidelines);
+        };
+    }, []);
 
     return (
         <div style={{ width: "100%", height: "100%", padding: "20px", boxSizing: "border-box", position: "relative", fontFamily: "sans-serif" }}>
@@ -47,21 +50,28 @@ const VMAgent = () => {
                     style={{ overflowY: "auto", maxHeight: "calc(100% - 40px)", paddingRight: "8px" }}
                     className="guidelines-scroll"
                 >
-                    <ul
-                        style={{ padding: "1rem 0 1rem 1rem", margin: 0, fontSize: "1rem", lineHeight: "1.3rem", listStyleType: "disc", }}>
-                        {guidelines.map((text, index) => (
-                            <li key={index} style={{ marginBottom: "0.75rem" }}>
-                                {text}
-                            </li>
+                    <div className="display-flex flex-direction-column custom-scrollbar-wrapper" style={{ rowGap: "1rem" }}>
+                        {guidelines?.map((rule, index) => (
+                            <div key={index}>
+                                {rule?.type === "TITLE" && (
+                                    <div style={{ display: "flex", columnGap: "0.5rem", marginBottom: "0.5rem" }}>
+                                        <strong>
+                                            {`Step ${rule?.step_no}: `}
+                                        </strong>
+                                        <strong>{rule?.description}</strong>
+                                    </div>
+                                )}
+                                {rule?.type === "PLAIN_TEXT" && <div style={{ marginBottom: "1rem" }}>{rule?.description}</div>}
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 </div>
             </div>
 
             {!expanded && (
                 <button
                     onClick={() => setExpanded(true)}
-                    style={{ position: "absolute", bottom: "20px", right: "20px", width: "60px", height: "60px", borderRadius: "50%", backgroundColor: "#2C2C2C", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "none", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)", cursor: "pointer", zIndex: 3, }}
+                    style={{ position: "absolute", bottom: "20px", right: "20px", width: "60px", height: "60px", borderRadius: "50%", backgroundColor: "#2C2C2C", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "none", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)", cursor: "pointer", zIndex: 3 }}
                     aria-label="Open Guidelines"
                 >
                     <MessageSquare size={28} />

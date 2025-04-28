@@ -22,7 +22,7 @@ export default defineConfig((env) => {
         },
         plugins: [pluginExposeRenderer(name)],
         server: {
-            port: 5173,
+            port: 3000,
             strictPort: true,
             watch: {
                 usePolling: true, // ✅ Enables live-reload in Electron
